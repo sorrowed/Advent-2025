@@ -1,0 +1,16 @@
+{
+    "build":{
+        "dockerfile": "Dockerfile",
+    },
+    "customizations": {
+		"vscode": {
+			"extensions": [
+				"ziglang.vscode-zig",
+				"ianic.zig-language-extras",
+				"lorenzopirro.zig-snippets",
+				"vadimcn.vscode-lldb"
+			]
+		}
+	},
+	"remoteUser": "vscode"
+}
