@@ -1,3 +1,4 @@
 .zig-cache/
 zig-out/
 *.o
+zig-x86_64-linux-0.16.0-dev.1484+d0ba6642b/
