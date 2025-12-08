@@ -31,17 +31,6 @@ fn rotate_left(rot: RotateResult, count: i32) RotateResult {
         i += 1;
     }
     return RotateResult{ .current = c, .zeroes = z };
-    // const r = @rem(count, 100);
-    // var new = rot.current - r;
-    // if (new < 0) {
-    //     new = 100 + new;
-    // }
-
-    // const d = @divTrunc(count - rot.current, 100);
-    // var zeroes = rot.zeroes + d;
-    // zeroes += if (rot.current != 0 and count >= rot.current) 1 else 0;
-
-    // return RotateResult{ .current = new, .zeroes = zeroes };
 }
 
 fn rotate_right(rot: RotateResult, count: i32) RotateResult {
@@ -215,7 +204,7 @@ pub fn part2() !void {
         x = try rotate(x, parse(line));
     }
 
-    //std.debug.assert(x.zeroes == 1180);
+    std.debug.assert(x.zeroes == 6892);
 
     std.debug.print("Day 01, part 2 : Number of times we had zeroes -> {d} \n", .{x.zeroes});
 }
