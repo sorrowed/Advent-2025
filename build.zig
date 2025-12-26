@@ -79,28 +79,14 @@ pub fn build(b: *std.Build) void {
                 // can be extremely useful in case of collisions (which can happen
                 // importing modules from different packages).
                 .{ .name = "Advent_2025", .module = mod },
+                .{ .name = "util", .module = b.addModule("util", .{ .root_source_file = b.path("src/util/mod.zig") }) },
+                .{ .name = "day01", .module = b.addModule("day01", .{ .root_source_file = b.path("src/day01/mod.zig") }) },
+                .{ .name = "day02", .module = b.addModule("day02", .{ .root_source_file = b.path("src/day02/mod.zig") }) },
+                .{ .name = "day03", .module = b.addModule("day03", .{ .root_source_file = b.path("src/day03/mod.zig") }) },
+                // .{ .name = "day04", .module = b.addModule("day04", .{ .root_source_file = b.path("src/day04/mod.zig") }) },
             },
         }),
     });
-
-    const fs = std.fs;
-    const allocator = b.allocator;
-
-    var dir = fs.cwd().openDir("src", .{ .iterate = true }) catch unreachable;
-    defer dir.close();
-
-    var it = dir.iterate();
-    while (it.next() catch unreachable) |entry| {
-        if (entry.kind == .directory and std.mem.startsWith(u8, entry.name, "day")) {
-            const module_path = std.fs.path.join(allocator, &.{ "src", entry.name, "mod.zig" }) catch unreachable;
-
-            const module = b.addModule(entry.name, .{
-                .root_source_file = b.path(module_path),
-            });
-
-            exe.root_module.addImport(entry.name, module);
-        }
-    }
 
     // This declares intent for the executable to be installed into the
     // install prefix when running `zig build` (i.e. when executing the default
