@@ -83,7 +83,7 @@ pub fn build(b: *std.Build) void {
                 .{ .name = "day01", .module = b.addModule("day01", .{ .root_source_file = b.path("src/day01/mod.zig") }) },
                 .{ .name = "day02", .module = b.addModule("day02", .{ .root_source_file = b.path("src/day02/mod.zig") }) },
                 .{ .name = "day03", .module = b.addModule("day03", .{ .root_source_file = b.path("src/day03/mod.zig") }) },
-                // .{ .name = "day04", .module = b.addModule("day04", .{ .root_source_file = b.path("src/day04/mod.zig") }) },
+                .{ .name = "day04", .module = b.addModule("day04", .{ .root_source_file = b.path("src/day04/mod.zig") }) },
             },
         }),
     });

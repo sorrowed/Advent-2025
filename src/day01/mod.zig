@@ -16,7 +16,7 @@ fn parse(line: []const u8) Op {
 
 const RotateResult = struct { current: i32, zeroes: i32 };
 
-fn rotate_left(rot: RotateResult, count: i32) RotateResult {
+fn rotateLeft(rot: RotateResult, count: i32) RotateResult {
     var c = rot.current;
     var z = rot.zeroes;
 
@@ -33,7 +33,7 @@ fn rotate_left(rot: RotateResult, count: i32) RotateResult {
     return RotateResult{ .current = c, .zeroes = z };
 }
 
-fn rotate_right(rot: RotateResult, count: i32) RotateResult {
+fn rotateRight(rot: RotateResult, count: i32) RotateResult {
     var c = rot.current;
     var z = rot.zeroes;
 
@@ -52,9 +52,9 @@ fn rotate_right(rot: RotateResult, count: i32) RotateResult {
 
 fn rotate(rot: RotateResult, op: Op) Error!RotateResult {
     return if (op.dir == Direction.Left)
-        rotate_left(rot, op.count)
+        rotateLeft(rot, op.count)
     else if (op.dir == Direction.Right)
-        rotate_right(rot, op.count)
+        rotateRight(rot, op.count)
     else
         Error.InvalidOp;
 }
@@ -77,14 +77,14 @@ test "parsing of right instruction" {
 
 test "turn left from 0" {
     var x = RotateResult{ .current = 0, .zeroes = 0 };
-    x = rotate_left(x, 1);
+    x = rotateLeft(x, 1);
 
     try expect(x.current == 99);
 }
 
 test "turn right from 99" {
     var x = RotateResult{ .current = 99, .zeroes = 0 };
-    x = rotate_right(x, 1);
+    x = rotateRight(x, 1);
 
     try expect(x.current == 0);
 }
@@ -116,7 +116,7 @@ test "test multiple ops" {
 
 test "turn right from 99, one rotation" {
     var x = RotateResult{ .current = 99, .zeroes = 0 };
-    x = rotate_right(x, 1);
+    x = rotateRight(x, 1);
 
     try expect(x.current == 0);
     try expect(x.zeroes == 1);
@@ -125,38 +125,38 @@ test "turn right from 99, one rotation" {
 test "turn several, multiple rotations, count zeroes" {
     var x = RotateResult{ .current = 50, .zeroes = 0 };
 
-    x = rotate_left(x, 68);
+    x = rotateLeft(x, 68);
     try expect(x.current == 82);
     try expect(x.zeroes == 1);
-    x = rotate_left(x, 30);
+    x = rotateLeft(x, 30);
     try expect(x.current == 52);
-    x = rotate_right(x, 48);
+    x = rotateRight(x, 48);
     try expect(x.current == 0);
     try expect(x.zeroes == 2);
-    x = rotate_left(x, 5);
+    x = rotateLeft(x, 5);
     try expect(x.current == 95);
     try expect(x.zeroes == 2);
-    x = rotate_right(x, 60);
+    x = rotateRight(x, 60);
     // std.log.warn("{} {}", .{ x.current, x.zeroes });
     try expect(x.current == 55);
     try expect(x.zeroes == 3);
-    x = rotate_left(x, 55);
+    x = rotateLeft(x, 55);
     try expect(x.current == 0);
     try expect(x.zeroes == 4);
-    x = rotate_left(x, 1);
+    x = rotateLeft(x, 1);
     try expect(x.current == 99);
     try expect(x.zeroes == 4);
-    x = rotate_left(x, 99);
+    x = rotateLeft(x, 99);
     try expect(x.current == 0);
     try expect(x.zeroes == 5);
-    x = rotate_right(x, 14);
+    x = rotateRight(x, 14);
     try expect(x.current == 14);
-    x = rotate_left(x, 82);
+    x = rotateLeft(x, 82);
     try expect(x.current == 32);
     try expect(x.zeroes == 6);
 }
 
-pub fn part1() !void {
+pub fn partOne() !void {
     const file = try std.fs.cwd().openFile(
         "src/day01/input.txt",
         .{},
@@ -185,7 +185,7 @@ pub fn part1() !void {
     std.debug.print("Day 01, part 1 : Number of times we had zeroes -> {d} \n", .{zeroes});
 }
 
-pub fn part2() !void {
+pub fn partTwo() !void {
     const file = try std.fs.cwd().openFile(
         "src/day01/input.txt",
         .{},

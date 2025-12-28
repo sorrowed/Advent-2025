@@ -8,7 +8,7 @@ const puzzle_input = "269194394-269335492,62371645-62509655,958929250-958994165,
 
 const Range = struct { begin: u64, end: u64 };
 
-fn parse_pairs(gpa: std.mem.Allocator, input: []const u8) !std.ArrayList(Range) {
+fn parsePairs(gpa: std.mem.Allocator, input: []const u8) !std.ArrayList(Range) {
     var ranges = std.ArrayList(Range).empty;
     errdefer ranges.deinit(gpa);
 
@@ -26,7 +26,7 @@ fn parse_pairs(gpa: std.mem.Allocator, input: []const u8) !std.ArrayList(Range) 
     return ranges;
 }
 
-fn is_invalid(number: u64) bool {
+fn isInvalid(number: u64) bool {
     const ord = @divTrunc(std.math.log10(number) + 1, 2);
 
     const fr = std.math.pow(u64, 10, ord);
@@ -36,7 +36,7 @@ fn is_invalid(number: u64) bool {
     return f == s;
 }
 
-fn is_invalid_some(number: u64) bool {
+fn isInvalidSome(number: u64) bool {
     var result: bool = false;
 
     var buffer: [32]u8 = undefined;
@@ -79,7 +79,7 @@ fn is_invalid_some(number: u64) bool {
     return result;
 }
 
-fn count_if_range(r: Range, pred: fn (number: u64) bool) usize {
+fn countIfRange(r: Range, pred: fn (number: u64) bool) usize {
     var result: usize = 0;
 
     for (r.begin..r.end + 1) |i| {
@@ -91,7 +91,7 @@ fn count_if_range(r: Range, pred: fn (number: u64) bool) usize {
     return result;
 }
 
-fn add_if_range(r: Range, pred: fn (number: u64) bool) u64 {
+fn addIfRange(r: Range, pred: fn (number: u64) bool) u64 {
     var result: u64 = 0;
 
     for (r.begin..r.end + 1) |i| {
@@ -106,7 +106,7 @@ fn add_if_range(r: Range, pred: fn (number: u64) bool) u64 {
 test "parsing of ranges" {
     const gpa = std.heap.page_allocator;
 
-    var pairs = try parse_pairs(gpa, test_input);
+    var pairs = try parsePairs(gpa, test_input);
     defer {
         pairs.deinit(gpa);
     }
@@ -118,75 +118,75 @@ test "parsing of ranges" {
 }
 
 test "determine invalid numbers" {
-    try expect(is_invalid(11));
-    try expect(is_invalid(1010));
-    try expect(is_invalid(100100));
-    try expect(is_invalid(10001000));
+    try expect(isInvalid(11));
+    try expect(isInvalid(1010));
+    try expect(isInvalid(100100));
+    try expect(isInvalid(10001000));
 
-    try expect(is_invalid(55));
-    try expect(is_invalid(6464));
-    try expect(is_invalid(123123));
-    try expect(!is_invalid(101));
+    try expect(isInvalid(55));
+    try expect(isInvalid(6464));
+    try expect(isInvalid(123123));
+    try expect(!isInvalid(101));
 }
 
 test "invalid numbers in test input" {
     const gpa = std.heap.page_allocator;
 
-    var pairs = try parse_pairs(gpa, test_input);
+    var pairs = try parsePairs(gpa, test_input);
     defer {
         pairs.deinit(gpa);
     }
-    try expect(count_if_range(pairs.items[0], is_invalid) == 2);
-    try expect(count_if_range(pairs.items[1], is_invalid) == 1);
-    try expect(count_if_range(pairs.items[2], is_invalid) == 1);
-    try expect(count_if_range(pairs.items[3], is_invalid) == 1);
-    try expect(count_if_range(pairs.items[4], is_invalid) == 1);
-    try expect(count_if_range(pairs.items[5], is_invalid) == 0);
-    try expect(count_if_range(pairs.items[6], is_invalid) == 1);
-    try expect(count_if_range(pairs.items[7], is_invalid) == 1);
-    try expect(count_if_range(pairs.items[8], is_invalid) == 0);
-    try expect(count_if_range(pairs.items[9], is_invalid) == 0);
-    try expect(count_if_range(pairs.items[10], is_invalid) == 0);
+    try expect(countIfRange(pairs.items[0], isInvalid) == 2);
+    try expect(countIfRange(pairs.items[1], isInvalid) == 1);
+    try expect(countIfRange(pairs.items[2], isInvalid) == 1);
+    try expect(countIfRange(pairs.items[3], isInvalid) == 1);
+    try expect(countIfRange(pairs.items[4], isInvalid) == 1);
+    try expect(countIfRange(pairs.items[5], isInvalid) == 0);
+    try expect(countIfRange(pairs.items[6], isInvalid) == 1);
+    try expect(countIfRange(pairs.items[7], isInvalid) == 1);
+    try expect(countIfRange(pairs.items[8], isInvalid) == 0);
+    try expect(countIfRange(pairs.items[9], isInvalid) == 0);
+    try expect(countIfRange(pairs.items[10], isInvalid) == 0);
 }
 
 test "invalid numbers in test input for part 2" {
     const gpa = std.heap.page_allocator;
 
-    var pairs = try parse_pairs(gpa, test_input);
+    var pairs = try parsePairs(gpa, test_input);
     defer {
         pairs.deinit(gpa);
     }
-    try expect(count_if_range(pairs.items[0], is_invalid_some) == 2);
-    try expect(count_if_range(pairs.items[1], is_invalid_some) == 2);
-    try expect(count_if_range(pairs.items[2], is_invalid_some) == 2);
-    try expect(count_if_range(pairs.items[3], is_invalid_some) == 1);
-    try expect(count_if_range(pairs.items[4], is_invalid_some) == 1);
-    try expect(count_if_range(pairs.items[5], is_invalid_some) == 0);
-    try expect(count_if_range(pairs.items[6], is_invalid_some) == 1);
-    try expect(count_if_range(pairs.items[7], is_invalid_some) == 1);
-    try expect(count_if_range(pairs.items[8], is_invalid_some) == 1);
-    try expect(count_if_range(pairs.items[9], is_invalid_some) == 1);
-    try expect(count_if_range(pairs.items[10], is_invalid_some) == 1);
+    try expect(countIfRange(pairs.items[0], isInvalidSome) == 2);
+    try expect(countIfRange(pairs.items[1], isInvalidSome) == 2);
+    try expect(countIfRange(pairs.items[2], isInvalidSome) == 2);
+    try expect(countIfRange(pairs.items[3], isInvalidSome) == 1);
+    try expect(countIfRange(pairs.items[4], isInvalidSome) == 1);
+    try expect(countIfRange(pairs.items[5], isInvalidSome) == 0);
+    try expect(countIfRange(pairs.items[6], isInvalidSome) == 1);
+    try expect(countIfRange(pairs.items[7], isInvalidSome) == 1);
+    try expect(countIfRange(pairs.items[8], isInvalidSome) == 1);
+    try expect(countIfRange(pairs.items[9], isInvalidSome) == 1);
+    try expect(countIfRange(pairs.items[10], isInvalidSome) == 1);
 }
 
 test "determine invalid numbers for part 2" {
-    try expect(is_invalid_some(12341234));
-    try expect(is_invalid_some(123123123));
-    try expect(is_invalid_some(1212121212));
-    try expect(is_invalid_some(1111111));
+    try expect(isInvalidSome(12341234));
+    try expect(isInvalidSome(123123123));
+    try expect(isInvalidSome(1212121212));
+    try expect(isInvalidSome(1111111));
 }
 
-pub fn part1() !void {
+pub fn partOne() !void {
     const gpa = std.heap.page_allocator;
 
-    var pairs = try parse_pairs(gpa, puzzle_input);
+    var pairs = try parsePairs(gpa, puzzle_input);
     defer {
         pairs.deinit(gpa);
     }
 
     var count: u64 = 0;
     for (pairs.items) |r| {
-        count += add_if_range(r, is_invalid);
+        count += addIfRange(r, isInvalid);
     }
 
     std.debug.assert(count == 31210613313);
@@ -194,17 +194,17 @@ pub fn part1() !void {
     std.debug.print("Day 02, part 1 : Number of invalid range ids -> {d} \n", .{count});
 }
 
-pub fn part2() !void {
+pub fn partTwo() !void {
     const gpa = std.heap.page_allocator;
 
-    var pairs = try parse_pairs(gpa, puzzle_input);
+    var pairs = try parsePairs(gpa, puzzle_input);
     defer {
         pairs.deinit(gpa);
     }
 
     var count: u64 = 0;
     for (pairs.items) |r| {
-        count += add_if_range(r, is_invalid_some);
+        count += addIfRange(r, isInvalidSome);
     }
 
     std.debug.assert(count == 41823587546);
