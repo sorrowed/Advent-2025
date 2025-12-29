@@ -21,25 +21,16 @@ pub fn build(b: *std.Build) void {
     // target and optimize options) will be listed when running `zig build --help`
     // in this directory.
 
-    // This creates a module, which represents a collection of source files alongside
-    // some compilation options, such as optimization mode and linked system libraries.
-    // Zig modules are the preferred way of making Zig code available to consumers.
-    // addModule defines a module that we intend to make available for importing
-    // to our consumers. We must give it a name because a Zig package can expose
-    // multiple modules and consumers will need to be able to specify which
-    // module they want to access.
-    const mod = b.addModule("Advent_2025", .{
-        // The root source file is the "entry point" of this module. Users of
-        // this module will only be able to access public declarations contained
-        // in this file, which means that if you have declarations that you
-        // intend to expose to consumers that were defined in other files part
-        // of this module, you will have to make sure to re-export them from
-        // the root file.
-        .root_source_file = b.path("src/root.zig"),
-        // Later on we'll use this module as the root module of a test executable
-        // which requires us to specify a target.
-        .target = target,
-    });
+    const util = b.addModule("util", .{ .root_source_file = b.path("src/util/mod.zig") });
+    const day01 = b.addModule("day01", .{ .root_source_file = b.path("src/day01/mod.zig") });
+    const day02 = b.addModule("day02", .{ .root_source_file = b.path("src/day02/mod.zig") });
+    const day03 = b.addModule("day03", .{ .root_source_file = b.path("src/day03/mod.zig") });
+    const day04 = b.addModule("day04", .{ .root_source_file = b.path("src/day04/mod.zig") });
+    const day05 = b.addModule("day05", .{ .root_source_file = b.path("src/day05/mod.zig") });
+
+    day02.addImport("util", util);
+    day04.addImport("util", util);
+    day05.addImport("util", util);
 
     // Here we define an executable. An executable needs to have a root module
     // which needs to expose a `main` function. While we could add a main function
@@ -73,17 +64,12 @@ pub fn build(b: *std.Build) void {
             // List of modules available for import in source files part of the
             // root module.
             .imports = &.{
-                // Here "Advent_2025" is the name you will use in your source code to
-                // import this module (e.g. `@import("Advent_2025")`). The name is
-                // repeated because you are allowed to rename your imports, which
-                // can be extremely useful in case of collisions (which can happen
-                // importing modules from different packages).
-                .{ .name = "Advent_2025", .module = mod },
-                .{ .name = "util", .module = b.addModule("util", .{ .root_source_file = b.path("src/util/mod.zig") }) },
-                .{ .name = "day01", .module = b.addModule("day01", .{ .root_source_file = b.path("src/day01/mod.zig") }) },
-                .{ .name = "day02", .module = b.addModule("day02", .{ .root_source_file = b.path("src/day02/mod.zig") }) },
-                .{ .name = "day03", .module = b.addModule("day03", .{ .root_source_file = b.path("src/day03/mod.zig") }) },
-                .{ .name = "day04", .module = b.addModule("day04", .{ .root_source_file = b.path("src/day04/mod.zig") }) },
+                .{ .name = "util", .module = util },
+                .{ .name = "day01", .module = day01 },
+                .{ .name = "day02", .module = day02 },
+                .{ .name = "day03", .module = day03 },
+                .{ .name = "day04", .module = day04 },
+                .{ .name = "day05", .module = day05 },
             },
         }),
     });
@@ -120,32 +106,26 @@ pub fn build(b: *std.Build) void {
         run_cmd.addArgs(args);
     }
 
-    // Creates an executable that will run `test` blocks from the provided module.
-    // Here `mod` needs to define a target, which is why earlier we made sure to
-    // set the releative field.
-    const mod_tests = b.addTest(.{
-        .root_module = mod,
-    });
-
-    // A run step that will run the test executable.
-    const run_mod_tests = b.addRunArtifact(mod_tests);
+    const test_step = b.step("test", "Run tests");
 
     // Creates an executable that will run `test` blocks from the executable's
     // root module. Note that test executables only test one module at a time,
     // hence why we have to create two separate ones.
-    const exe_tests = b.addTest(.{
-        .root_module = exe.root_module,
-    });
+    const tests = b.addTest(.{ .root_module = b.createModule(.{
+        .root_source_file = b.path("src/test.zig"),
+        .target = target,
+    }) });
 
     // A run step that will run the second test executable.
-    const run_exe_tests = b.addRunArtifact(exe_tests);
+    const test_cmd = b.addRunArtifact(tests);
+    if (b.args) |args| {
+        test_cmd.addArgs(args);
+    }
 
     // A top level step for running all tests. dependOn can be called multiple
     // times and since the two run steps do not depend on one another, this will
     // make the two of them run in parallel.
-    const test_step = b.step("test", "Run tests");
-    test_step.dependOn(&run_mod_tests.step);
-    test_step.dependOn(&run_exe_tests.step);
+    test_step.dependOn(&test_cmd.step);
 
     // Just like flags, top level steps are also listed in the `--help` menu.
     //
