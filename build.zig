@@ -27,6 +27,7 @@ pub fn build(b: *std.Build) void {
     const day03 = b.addModule("day03", .{ .root_source_file = b.path("src/day03/mod.zig") });
     const day04 = b.addModule("day04", .{ .root_source_file = b.path("src/day04/mod.zig") });
     const day05 = b.addModule("day05", .{ .root_source_file = b.path("src/day05/mod.zig") });
+    const day06 = b.addModule("day06", .{ .root_source_file = b.path("src/day06/mod.zig") });
 
     day02.addImport("util", util);
     day04.addImport("util", util);
@@ -70,6 +71,7 @@ pub fn build(b: *std.Build) void {
                 .{ .name = "day03", .module = day03 },
                 .{ .name = "day04", .module = day04 },
                 .{ .name = "day05", .module = day05 },
+                .{ .name = "day06", .module = day06 },
             },
         }),
     });
