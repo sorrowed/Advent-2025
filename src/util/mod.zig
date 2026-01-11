@@ -33,3 +33,22 @@ pub const FileLines = struct {
         return self.slices.items;
     }
 };
+
+pub const Vector2 = struct {
+    x: i32,
+    y: i32,
+
+    pub fn equals(self: *const Vector2, other: Vector2) bool {
+        return self.x == other.x and self.y == other.y;
+    }
+};
+
+pub const Extends = struct { tl: Vector2, br: Vector2 };
+
+pub fn indexOf(comptime T: type, haystack: []const T, needle: T) ?usize {
+    return for (haystack, 0..) |item, index| {
+        if (item.equals(needle)) {
+            break index;
+        }
+    } else null;
+}

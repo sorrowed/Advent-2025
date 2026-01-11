@@ -1,5 +1,5 @@
 const std = @import("std");
-const util = @import("util");
+const util = @import("util.zig");
 
 const test_input = [_][]const u8{
     "..@@.@@@@.",
@@ -14,14 +14,6 @@ const test_input = [_][]const u8{
     "@.@.@@@.@.",
 };
 
-const Vector2 = struct {
-    x: i32,
-    y: i32,
-
-    fn isEqual(self: *const Vector2, other: Vector2) bool {
-        return self.x == other.x and self.y == other.y;
-    }
-};
 const Tile = struct {
     const Type = enum(u8) {
         Empty = '.',
@@ -29,11 +21,10 @@ const Tile = struct {
     };
     type: Type,
 };
-const Extends = struct { tl: Vector2, br: Vector2 };
 
 const Map = struct {
-    tiles: std.AutoHashMap(Vector2, Tile),
-    extends: Extends,
+    tiles: std.AutoHashMap(util.Vector2, Tile),
+    extends: util.Extends,
 
     pub fn deinit(self: *Map) void {
         self.tiles.deinit();
@@ -43,13 +34,13 @@ const Map = struct {
         return self.tiles.count();
     }
 
-    fn get(self: *const Map, key: Vector2) ?Tile {
+    fn get(self: *const Map, key: util.Vector2) ?Tile {
         return self.tiles.get(key);
     }
 };
 
 fn parseMap(gpa: std.mem.Allocator, input: []const []const u8) !Map {
-    var result = std.AutoHashMap(Vector2, Tile).init(gpa);
+    var result = std.AutoHashMap(util.Vector2, Tile).init(gpa);
 
     var x_max: i32 = 0;
     var y_max: i32 = 0;
@@ -69,15 +60,15 @@ fn parseMap(gpa: std.mem.Allocator, input: []const []const u8) !Map {
     return .{ .tiles = result, .extends = .{ .tl = .{ .x = 0, .y = 0 }, .br = .{ .x = x_max, .y = y_max } } };
 }
 
-fn countNeighboringPaperTiles(map: Map, current: Vector2) i32 {
+fn countNeighboringPaperTiles(map: Map, current: util.Vector2) i32 {
     var paperTiles: i32 = 0;
 
     const offsets = [_]i32{ -1, 0, 1 };
     for (offsets) |xo| {
         for (offsets) |yo| {
-            const neighbor = Vector2{ .x = current.x + xo, .y = current.y + yo };
+            const neighbor = util.Vector2{ .x = current.x + xo, .y = current.y + yo };
 
-            if (!current.isEqual(neighbor)) {
+            if (!current.equals(neighbor)) {
                 if (map.get(neighbor)) |n| {
                     if (n.type == Tile.Type.Paper) {
                         paperTiles += 1;
@@ -99,7 +90,7 @@ test "parse map, test extends and extract some items" {
 
     try std.testing.expectEqual(10 * 10, map.count());
 
-    const expectedExtends: Extends = .{ .tl = .{ .x = 0, .y = 0 }, .br = .{ .x = 9, .y = 9 } };
+    const expectedExtends: util.Extends = .{ .tl = .{ .x = 0, .y = 0 }, .br = .{ .x = 9, .y = 9 } };
     try std.testing.expectEqual(expectedExtends, map.extends);
 
     const tileX0Y0 = map.get(.{ .x = 0, .y = 0 });
@@ -179,7 +170,7 @@ pub fn partTwo() !void {
     var tiles_removed: usize = 0;
 
     while (true) {
-        var to_be_removed = std.ArrayList(Vector2).empty;
+        var to_be_removed = std.ArrayList(util.Vector2).empty;
         defer to_be_removed.deinit(gpa);
 
         var items = map.tiles.iterator();
