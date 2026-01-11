@@ -33,3 +33,14 @@ pub const FileLines = struct {
         return self.slices.items;
     }
 };
+
+pub const Vector2 = struct {
+    x: i32,
+    y: i32,
+
+    pub fn isEqual(self: *const Vector2, other: Vector2) bool {
+        return self.x == other.x and self.y == other.y;
+    }
+};
+
+pub const Extends = struct { tl: Vector2, br: Vector2 };

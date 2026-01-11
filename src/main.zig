@@ -6,6 +6,7 @@ const day03 = @import("day03");
 const day04 = @import("day04");
 const day05 = @import("day05");
 const day06 = @import("day06");
+const day07 = @import("day07");
 
 pub fn main() !void {
     // Prints to stderr, ignoring potential errors.
@@ -22,4 +23,6 @@ pub fn main() !void {
     try day05.partTwo();
     try day06.partOne();
     try day06.partTwo();
+    try day07.partOne();
+    try day07.partTwo();
 }
